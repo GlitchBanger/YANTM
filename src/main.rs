@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 use bevy::window::WindowMode;
 
+#[derive(Component)]
+struct Protagonist;
+
 fn main() {
     App::new()
     .insert_resource(WindowDescriptor {
@@ -9,6 +12,7 @@ fn main() {
     })
     .add_plugins(DefaultPlugins)
     .add_startup_system(setup)
+    .add_system(transforming)
     .run();
 }
 
@@ -26,11 +30,12 @@ fn setup(mut commands: Commands) {
             },
             ..default()
         }
-    );
+    )
+    .insert(Protagonist);
 }
 
-fn transforming(mut query: &mut Query<&mut Transform>) {
+fn transforming(mut query: Query<&mut Transform, With<Protagonist>>) {
     for mut transform in query.iter_mut() {
-        transform.translation.x += 1.0;
+        transform.translation.x += 10.0;
     }
 }
