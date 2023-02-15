@@ -28,3 +28,9 @@ fn setup(mut commands: Commands) {
         }
     );
 }
+
+fn transforming(mut query: &mut Query<&mut Transform>) {
+    for mut transform in query.iter_mut() {
+        transform.translation.x += 1.0;
+    }
+}
