@@ -11,6 +11,12 @@ struct Road;
 #[derive(Component)]
 struct House;
 
+#[derive(Component)]
+struct Dustbin;
+
+#[derive(Component)]
+struct Beggar;
+
 fn main() {
     App::new()
     .insert_resource(WindowDescriptor {
@@ -21,6 +27,8 @@ fn main() {
     .add_startup_system(setup)
     .add_startup_system(add_road)
     .add_startup_system(add_houses)
+    .add_startup_system(add_dustbins)
+    .add_startup_system(add_beggar)
     .add_system_set(
         SystemSet::new()
             .with_run_criteria(FixedTimestep::step(0.04))
@@ -51,7 +59,13 @@ fn setup(mut commands: Commands, windows: Res<Windows>) {
 
 fn transforming(mut query: Query<&mut Transform, With<Protagonist>>) {
     for mut transform in query.iter_mut() {
-        transform.translation.x += 1.5;
+        if transform.translation.x < 0.0 {
+            transform.translation.x += 1.5;
+            return;
+        }
+        if transform.translation.y < 0.0 {
+            transform.translation.y += 0.5;
+        }
     }
 }
 
@@ -82,19 +96,61 @@ fn add_road(windows: Res<Windows>, mut commands: Commands) {
 }
 
 fn add_houses(mut commands: Commands) {
+    let positions = vec![-500.0, 0.0, 500.0];
+    for i in positions {
+        commands.spawn_bundle(
+            SpriteBundle {
+                sprite: Sprite {
+                    color: Color::rgb(1.0, 0.0, 0.0),
+                    ..default()
+                },
+                transform: Transform {
+                    scale: Vec3::new(300.0, 300.0, 1.0),
+                    translation: Vec3::new(i, 100.0, 0.0),
+                    ..default()
+                },
+                ..default()
+            }
+        )
+        .insert(House);
+    }
+}
+
+fn add_dustbins(mut commands: Commands) {
+    let positions: Vec<_> = vec![-600.0, -100.0, 400.0];
+    for i in positions {
+        commands.spawn_bundle(
+            SpriteBundle {
+                sprite: Sprite {
+                    color: Color::rgb(0.0, 0.0, 1.0),
+                    ..default()
+                },
+                transform: Transform {
+                    scale: Vec3::new(48.0, 96.0, 48.0),
+                    translation: Vec3::new(i, -6.0, 3.0),
+                    ..default()
+                },
+                ..default()
+            }
+        )
+        .insert(Dustbin);
+    }
+}
+
+fn add_beggar(mut commands: Commands) {
     commands.spawn_bundle(
         SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(1.0, 0.0, 0.0),
+                color: Color::rgba(0.0, 1.0, 0.0, 0.2),
                 ..default()
             },
             transform: Transform {
-                scale: Vec3::new(200.0, 200.0, 1.0),
-                translation: Vec3::new(-450.0, 0.0, 0.0),
+                scale: Vec3::new(96.0, 96.0, 10.0),
+                translation: Vec3::new(-115.0, -8.0, 4.0),
                 ..default()
             },
             ..default()
         }
     )
-    .insert(House);
+    .insert(Beggar);
 }
