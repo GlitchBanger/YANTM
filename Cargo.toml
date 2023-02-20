@@ -7,3 +7,7 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.7"
+winit = "0.25"
+x11 = "2.18.1"
+display-info = "0.4.1"
+xcb = "0.8.2"
